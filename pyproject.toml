@@ -1,0 +1,25 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "prompttree"
+version = "0.1.0"
+description = "Prompt registry, experiments, lineage, and repair-context tooling."
+readme = "README.md"
+requires-python = ">=3.9"
+license = { text = "MIT" }
+authors = [{ name = "Hikaru" }]
+dependencies = [
+  "PyYAML>=6.0",
+]
+
+[project.scripts]
+prompttree = "prompttree.cli:main"
+
+[tool.setuptools]
+package-dir = { "" = "src" }
+
+[tool.setuptools.packages.find]
+where = ["src"]
+

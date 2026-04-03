@@ -1,0 +1,6 @@
+project: prompttree-example
+registry_dir: prompting
+ledger_db: .prompttree/prompttree.db
+default_experiment_mode: three-arm
+default_repair_history_limit: 3
+

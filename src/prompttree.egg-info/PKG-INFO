@@ -1,0 +1,109 @@
+Metadata-Version: 2.4
+Name: prompttree
+Version: 0.1.0
+Summary: Prompt registry, experiments, lineage, and repair-context tooling.
+Author: Hikaru
+License: MIT
+Requires-Python: >=3.9
+Description-Content-Type: text/markdown
+Requires-Dist: PyYAML>=6.0
+
+# PromptTree
+
+PromptTree is a Python library for managing prompt versions, branching prompt experiments, recording run lineage, and retrieving short repair context from recent history.
+
+It is designed to be reusable across repositories:
+
+- registry for prompt families and versions
+- branching and A/B experiments
+- deterministic assignment
+- SQLite ledger for runs, evaluations, assignments, and artifact revisions
+- repair context with a default lookback of 3
+- adapter interface so each repository can define its own artifacts and evaluation logic
+
+## Install
+
+```bash
+pip install -e .
+```
+
+## Layout
+
+```text
+prompttree/
+  pyproject.toml
+  src/prompttree/
+  examples/prompttree.project.yaml
+```
+
+Registry layout:
+
+```text
+prompting/
+  families/
+    variable-line/
+      family.yaml
+      versions/
+        variable-line-v1.md
+        variable-line-v2.md
+  experiments/
+    exp-variable-line-v2a-v2b.yaml
+```
+
+## What It Does
+
+- `Registry`: load families, versions, templates, and experiments from disk
+- `Template`: render prompt text from a version body and variables
+- `Ledger`: store runs, evaluations, assignments, and artifact revisions in SQLite
+- `Experiments`: create branched prompt variants and deterministic assignments
+- `History`: return recent revisions and repair context, with default limits of 3
+- `Adapter`: repository-specific contract for artifact loading, diffing, evaluation, and apply steps
+
+## CLI
+
+```bash
+prompttree init --root .
+prompttree family list --root .
+prompttree version show --root . variable-line@current
+prompttree experiment branch-and-start --root . --family variable-line --from current --mode three-arm \
+  --child-id variable-line-v4a --child-label "contrast-heavy wording" \
+  --child-id variable-line-v4b --child-label "example-anchored wording"
+prompttree repair-context --db .prompttree/prompttree.db --kind variable_doc_line --dataset uniprot --key gene_label
+```
+
+## Example Usage
+
+```python
+from pathlib import Path
+
+from prompttree.experiments import ExperimentManager
+from prompttree.ledger import Ledger
+from prompttree.registry import Registry
+
+root = Path(".")
+registry = Registry.load(root / "prompting")
+ledger = Ledger(root / ".prompttree" / "prompttree.db")
+
+version = registry.resolve_version("variable-line", "current")
+text = version.render(variable_name="gene_label", example_value="BRCA1")
+
+run_id = ledger.start_run(
+    family_id="variable-line",
+    version_id=version.id,
+    stage="generation",
+    dataset="uniprot",
+    target_kind="variable_doc_line",
+    target_id="uniprot:gene_label",
+    provider="openai",
+    model_name="gpt-5.4",
+    input_snapshot={"variable_name": "gene_label"},
+    rendered_prompt=text,
+)
+
+ledger.finish_run(run_id, raw_output="...", normalized_output="...", status="succeeded")
+
+manager = ExperimentManager(registry=registry, ledger=ledger)
+assignment = manager.assign("variable-line", "uniprot:gene_label")
+print(assignment.version_id)
+```
+

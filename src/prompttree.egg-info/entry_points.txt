@@ -1,0 +1,2 @@
+[console_scripts]
+prompttree = prompttree.cli:main
