@@ -1,0 +1,53 @@
+[
+  {
+    "version_id": "sort-prompt-v2b",
+    "label": "stable sort with itemgetter",
+    "parent_id": "sort-prompt-v1",
+    "hop_distance": 0,
+    "status": "candidate",
+    "hypothesis": "Stable multi-pass sorting with itemgetter may outperform the tuple-key approach.",
+    "prompt": "You are Codex. Write a Python function named `solve(records)` that sorts dictionaries by:\n1. `age` ascending\n2. `score` descending\n3. `name` ascending\n\nOptimization goal:\n- Keep correctness identical to the baseline.\n- Use Python's stable sort intentionally.\n- Prefer `operator.itemgetter` if it improves the hot path.\n- Return a new list.\n- Output code only.",
+    "metrics": {
+      "round": "round-1",
+      "score": 1.0,
+      "avg_time_ms": 2.934,
+      "avg_peak_kb": 270.8,
+      "failures": 0,
+      "generated_file": "/Users/hikaru/Desktop/prompttree/examples/sort/output/generated/sort-prompt-v2b.py"
+    }
+  },
+  {
+    "version_id": "sort-prompt-v1",
+    "label": "baseline clarity prompt",
+    "parent_id": null,
+    "hop_distance": 1,
+    "status": "current",
+    "hypothesis": "A simple Codex prompt should produce correct code, but not the fastest code.",
+    "prompt": "You are Codex. Write a Python function named `solve(records)` that returns records sorted by:\n1. `age` ascending\n2. `score` descending\n3. `name` ascending\n\nRequirements:\n- Prefer clarity over optimization.\n- Return a new list.\n- The input records are dictionaries.\n- Output code only.",
+    "metrics": {
+      "round": "round-1",
+      "score": 0.228,
+      "avg_time_ms": 17.274,
+      "avg_peak_kb": 745.0,
+      "failures": 0,
+      "generated_file": "/Users/hikaru/Desktop/prompttree/examples/sort/output/generated/sort-prompt-v1.py"
+    }
+  },
+  {
+    "version_id": "sort-prompt-v2a",
+    "label": "single composite key",
+    "parent_id": "sort-prompt-v1",
+    "hop_distance": 2,
+    "status": "candidate",
+    "hypothesis": "One copy plus one composite key should beat the baseline on time and memory.",
+    "prompt": "You are Codex. Write a Python function named `solve(records)` that sorts dictionaries by:\n1. `age` ascending\n2. `score` descending\n3. `name` ascending\n\nOptimization goal:\n- Minimize allocations while staying correct.\n- Copy the input list once, then sort that list in place.\n- Use one composite sort key.\n- Return the sorted copy.\n- Output code only.",
+    "metrics": {
+      "round": "round-1",
+      "score": 0.361,
+      "avg_time_ms": 7.891,
+      "avg_peak_kb": 803.3,
+      "failures": 0,
+      "generated_file": "/Users/hikaru/Desktop/prompttree/examples/sort/output/generated/sort-prompt-v2a.py"
+    }
+  }
+]

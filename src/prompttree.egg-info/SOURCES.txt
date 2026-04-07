@@ -4,11 +4,13 @@ setup.py
 src/prompttree/__init__.py
 src/prompttree/__main__.py
 src/prompttree/cli.py
+src/prompttree/evolution.py
 src/prompttree/experiments.py
 src/prompttree/history.py
 src/prompttree/ledger.py
 src/prompttree/models.py
 src/prompttree/registry.py
+src/prompttree/visualization.py
 src/prompttree.egg-info/PKG-INFO
 src/prompttree.egg-info/SOURCES.txt
 src/prompttree.egg-info/dependency_links.txt

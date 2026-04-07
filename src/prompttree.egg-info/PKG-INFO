@@ -10,14 +10,17 @@ Requires-Dist: PyYAML>=6.0
 
 # PromptTree
 
-PromptTree is a Python library for managing prompt versions, branching prompt experiments, recording run lineage, and retrieving short repair context from recent history.
+PromptTree is a Python library for managing a prompt catalog with named refs, branching prompt experiments, recording run lineage, and retrieving short repair context from recent history.
+
+Agent workflow guidance for repository-local changes lives in [AGENTS.md](/Users/hikaru/Desktop/prompttree/AGENTS.md). It explicitly requires agents to run relevant verification after every change and continue fixing issues until those checks pass.
 
 It is designed to be reusable across repositories:
 
 - registry for prompt families and versions
+- named refs such as `current`, `best`, and derived `latest`
 - branching and A/B experiments
 - deterministic assignment
-- SQLite ledger for runs, evaluations, assignments, and artifact revisions
+- SQLite ledger for runs, evaluations, assignments, prompt ref revisions, and artifact revisions
 - repair context with a default lookback of 3
 - adapter interface so each repository can define its own artifacts and evaluation logic
 
@@ -52,9 +55,9 @@ prompting/
 
 ## What It Does
 
-- `Registry`: load families, versions, templates, and experiments from disk
+- `Registry`: load families, versions, refs, templates, and experiments from disk
 - `Template`: render prompt text from a version body and variables
-- `Ledger`: store runs, evaluations, assignments, and artifact revisions in SQLite
+- `Ledger`: store runs, evaluations, assignments, prompt ref revisions, and artifact revisions in SQLite
 - `Experiments`: create branched prompt variants and deterministic assignments
 - `History`: return recent revisions and repair context, with default limits of 3
 - `Adapter`: repository-specific contract for artifact loading, diffing, evaluation, and apply steps
@@ -65,6 +68,9 @@ prompting/
 prompttree init --root .
 prompttree family list --root .
 prompttree version show --root . variable-line@current
+prompttree version show --root . variable-line@latest
+prompttree ref list --root . --family variable-line
+prompttree ref set --root . --db .prompttree/prompttree.db --family variable-line --name best --version variable-line-v4
 prompttree experiment branch-and-start --root . --family variable-line --from current --mode three-arm \
   --child-id variable-line-v4a --child-label "contrast-heavy wording" \
   --child-id variable-line-v4b --child-label "example-anchored wording"
@@ -101,9 +107,37 @@ run_id = ledger.start_run(
 )
 
 ledger.finish_run(run_id, raw_output="...", normalized_output="...", status="succeeded")
+ledger.record_evaluation(
+    run_id=run_id,
+    kind="rubric",
+    status="passed",
+    metrics={"score": 0.92},
+    evaluator_kind="external",
+    provider="user-code",
+    score_name="rubric_score",
+    score=0.92,
+)
+
+registry.set_ref("variable-line", "best", version.id)
+ledger.record_ref_revision(
+    family_id="variable-line",
+    ref_name="best",
+    before_version_id=None,
+    after_version_id=version.id,
+    reason="Promoted after external rubric scoring.",
+)
 
 manager = ExperimentManager(registry=registry, ledger=ledger)
 assignment = manager.assign("variable-line", "uniprot:gene_label")
 print(assignment.version_id)
 ```
 
+## Sort Optimization Example
+
+There is a runnable example that treats the Codex prompt as the artifact under test. It runs an initial `v1` vs `v2a` vs `v2b` benchmark, pulls up to 3 hops around the winning branch, generates two new prompt candidates from that context, benchmarks the resulting implementations, records runtime and peak memory in the ledger, promotes the winning prompt into named refs such as `best` and `current`, and writes a styled SVG prompt tree with per-version scores.
+
+```bash
+python examples/sort/main.py
+```
+
+The example lives in [examples/sort/README.md](/Users/hikaru/Desktop/prompttree/examples/sort/README.md). It is self-contained in one executable file and uses a deterministic Codex simulation so you can inspect the full PromptTree flow without external API calls.

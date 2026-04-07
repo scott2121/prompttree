@@ -1,30 +1,30 @@
 # PromptTree
 
-PromptTree is a Python library for managing prompt families, output artifacts, external evaluations, and automatic promotion across text, code, image, and other generation tasks.
+PromptTree は、テキスト、コード、画像などの生成タスクにまたがって、プロンプトファミリー、出力アーティファクト、外部評価、自動プロモーションを管理するための Python ライブラリです。
 
-Japanese README: [README.ja.md](/Users/hikaru/Desktop/prompttree/README.ja.md)
+English README: [README.md](/Users/hikaru/Desktop/prompttree/README.md)
 
-Agent workflow guidance for repository-local changes lives in [AGENTS.md](/Users/hikaru/Desktop/prompttree/AGENTS.md). It explicitly requires agents to run relevant verification after every change and continue fixing issues until those checks pass.
+リポジトリ内で作業するエージェント向けの運用ルールは [AGENTS.md](/Users/hikaru/Desktop/prompttree/AGENTS.md) にあります。変更後に関連する検証を実行し、通るまで修正を継続することが明記されています。
 
-It is designed to be reusable across repositories:
+複数のリポジトリで再利用できるように設計されており、主に次の要素を提供します。
 
-- registry for prompt families and versions
-- prompt outputs stored as artifact handles instead of raw text only
-- named refs such as `current`, `best`, and derived `latest`
-- branching and A/B experiments
-- deterministic assignment
-- SQLite ledger for runs, output artifacts, evaluations, assignments, prompt ref revisions, and artifact revisions
-- promotion policies for automatic `best` / `current` updates
-- repair context with a default lookback of 3
-- adapter interface so each repository can define its own artifacts and evaluation logic
+- プロンプトファミリーとバージョンのレジストリ
+- 生テキストだけでなくアーティファクトハンドルとして保持される出力
+- `current`、`best`、派生の `latest` といった名前付き ref
+- ブランチ分岐と A/B 実験
+- 決定論的な割り当て
+- 実行、出力アーティファクト、評価、割り当て、プロンプト ref 改訂、アーティファクト改訂を記録する SQLite ledger
+- `best` / `current` の自動更新を行うプロモーションポリシー
+- デフォルトの lookback が 3 の repair context
+- 各リポジトリが独自のアーティファクトや評価ロジックを定義できる adapter インターフェース
 
-## Install
+## インストール
 
 ```bash
 pip install -e .
 ```
 
-## Layout
+## レイアウト
 
 ```text
 prompttree/
@@ -33,7 +33,7 @@ prompttree/
   examples/prompttree.project.yaml
 ```
 
-Registry layout:
+レジストリのレイアウト:
 
 ```text
 prompting/
@@ -47,16 +47,16 @@ prompting/
     exp-variable-line-v2a-v2b.yaml
 ```
 
-## What It Does
+## できること
 
-- `Registry`: load families, versions, refs, templates, and experiments from disk
-- `Template`: render prompt text from a version body and variables
-- `ArtifactHandle`: represent generated outputs such as files, inline text, images, or URLs
-- `Ledger`: store runs, output artifacts, evaluations, assignments, prompt ref revisions, and artifact revisions in SQLite
-- `Experiments`: create branched prompt variants, complete experiments, and auto-promote winners
-- `History`: return recent revisions and repair context, with default limits of 3
-- `History.prompt_change_summary(...)`: compare a prompt version to its parent or another ref, including unified diff plus score deltas
-- `Adapter`: repository-specific contract for artifact loading, diffing, evaluation, and apply steps
+- `Registry`: ファミリー、バージョン、ref、テンプレート、実験定義をディスクから読み込む
+- `Template`: バージョン本文と変数からプロンプトテキストをレンダリングする
+- `ArtifactHandle`: ファイル、インラインテキスト、画像、URL などの生成物を表現する
+- `Ledger`: 実行、出力アーティファクト、評価、割り当て、プロンプト ref 改訂、アーティファクト改訂を SQLite に保存する
+- `Experiments`: 分岐したプロンプトバリアントを作成し、実験を完了し、勝者を自動プロモートする
+- `History`: 直近の改訂履歴と repair context を返す。デフォルトの件数は 3
+- `History.prompt_change_summary(...)`: プロンプトバージョンを親または別 ref と比較し、unified diff とスコア差分を返す
+- `Adapter`: アーティファクト読み込み、差分、評価、適用手順を定義するリポジトリ固有の契約
 
 ## CLI
 
@@ -78,15 +78,15 @@ prompttree promote auto --root . --db .prompttree/prompttree.db --family variabl
 prompttree repair-context --db .prompttree/prompttree.db --kind variable_doc_line --dataset uniprot --key gene_label
 ```
 
-## Managing Multiple Prompt Tracks
+## 複数のプロンプト系統を管理する
 
-Use one prompt `family` per unrelated task, even when everything lives in the same repository.
+同じリポジトリ内であっても、無関係なタスクごとに 1 つの `family` を使います。
 
-- `support-reply`, `refund-classifier`, and `image-poster` should be separate families.
-- Variants of the same task should stay in one family as versions and experiments.
-- The ledger can stay shared across families; `family_id`, `stage`, and `dataset` keep the histories separate.
+- `support-reply`、`refund-classifier`、`image-poster` は別ファミリーに分けるべきです。
+- 同じタスクのバリエーションは、1 つのファミリー内でバージョンや実験として管理します。
+- ledger は複数ファミリーで共有したままで構いません。`family_id`、`stage`、`dataset` によって履歴が分離されます。
 
-## Example Usage
+## 使用例
 
 ```python
 from pathlib import Path
@@ -165,11 +165,11 @@ print(winner.version_id if winner else "no winner")
 ## Examples
 
 - `python examples/sort/main.py`
-  Runs prompt discovery for code generation, records `prompt_generation`, `code_generation`, and `benchmark` runs, and auto-promotes the lowest-cost prompt.
+  コード生成向けの prompt discovery を実行し、`prompt_generation`、`code_generation`、`benchmark` の実行を記録し、最小コストのプロンプトを自動プロモートします。
 - `python examples/ab_prompt_hardening/main.py`
-  Runs a deterministic A/B support-reply experiment where external rubric scores are ingested into the ledger and promotion happens automatically.
+  決定論的な A/B の support-reply 実験を実行し、外部 rubric score を ledger に取り込み、自動プロモーションを行います。
 - `python examples/qualitative_image_review/main.py`
-  Demonstrates a qualitative review loop with simulated local PNG artifacts, structured human review files, prompt generation from review notes, and auto-promotion.
+  ローカル PNG アーティファクト、構造化された人手レビュー、レビュー内容からの prompt generation、自動プロモーションを含む定性的レビューのループを示します。
 
 ```bash
 python examples/sort/main.py

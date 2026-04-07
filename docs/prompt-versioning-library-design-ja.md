@@ -53,6 +53,9 @@
 - `repair-variable-description`
 - `repair-query-description`
 
+Family は immutable な version 集合に加えて、`current` `best` `prod` のような
+**名前付き ref** を持つ。`latest` は永続化せず、作成日時から導出する派生 ref として扱う。
+
 ### 2. PromptVersion
 
 1つの family に属する immutable な version。
@@ -115,6 +118,13 @@
 - `run_id`
 - `kind`
 - `status`
+- `evaluator_kind`
+- `provider`
+- `model_name`
+- `judge_prompt_ref`
+- `score_name`
+- `score`
+- `subscores`
 - `metrics`
 - `reason`
 - `details`
@@ -284,6 +294,9 @@ id: variable-line
 name: Variable Documentation Line
 stage: variables_info_generation
 current_version: v3
+refs:
+  current: v3
+  best: v5
 artifact_kind: variable_doc_line
 description: Build one natural-language line for variables_info.txt.
 ```

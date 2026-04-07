@@ -1,0 +1,21 @@
+Demo workspace: /var/folders/78/3k6tj_d10s581kjs9k8gg7c00000gn/T/prompttree-sort-optimization
+Prompt evolution benchmark for Codex-generated sort implementations
+
+round-1
+- V3: failures=0, score=0.322, avg_time_ms=3.157, avg_peak_kb=270.8 winner
+- V2: failures=0, score=0.933, avg_time_ms=9.105, avg_peak_kb=794.0
+- V1: failures=0, score=1.000, avg_time_ms=9.855, avg_peak_kb=831.1
+
+round-2
+- V3: failures=0, score=0.368, avg_time_ms=3.798, avg_peak_kb=270.8 winner
+- V4: failures=0, score=0.469, avg_time_ms=5.565, avg_peak_kb=203.2
+- V5: failures=0, score=0.946, avg_time_ms=9.283, avg_peak_kb=794.0
+
+Final promoted current version: V3
+
+Scoreboard
+- V1: average_score=1.0, latest_decision=accepted, latest_artifacts=['/Users/hikaru/Desktop/prompttree/examples/sort/output/generated/V1.py']
+- V2: average_score=0.933, latest_decision=accepted, latest_artifacts=['/Users/hikaru/Desktop/prompttree/examples/sort/output/generated/V2.py']
+- V3: average_score=0.345, latest_decision=accepted, latest_artifacts=['/Users/hikaru/Desktop/prompttree/examples/sort/output/generated/V3.py']
+- V4: average_score=0.469, latest_decision=accepted, latest_artifacts=['/Users/hikaru/Desktop/prompttree/examples/sort/output/generated/V4.py']
+- V5: average_score=0.946, latest_decision=accepted, latest_artifacts=['/Users/hikaru/Desktop/prompttree/examples/sort/output/generated/V5.py']
