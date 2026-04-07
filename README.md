@@ -24,6 +24,14 @@ It is designed to be reusable across repositories:
 pip install -e .
 ```
 
+Initialize a project workspace after installation:
+
+```bash
+prompttree init --root .
+```
+
+This creates a local `prompting/` registry directory and `.prompttree/prompttree.db` ledger in the current project. Installing the package alone does not create those files.
+
 ## Layout
 
 ```text
@@ -183,9 +191,11 @@ python examples/ab_prompt_hardening/main.py
 python examples/qualitative_image_review/main.py
 ```
 
-## Visualized Example Output
+Each example uses its own directory as the local PromptTree workspace. Running an example recreates `prompting/` and `.prompttree/` under that example directory.
 
-The sort example writes visual artifacts that make prompt evolution easier to inspect without opening the SQLite ledger directly.
+## Sample Visualized Output
+
+The repository includes sample visual artifacts for the sort example so you can inspect prompt evolution without opening the SQLite ledger directly. The current `examples/sort/main.py` script regenerates `run.txt`, lineage JSON, and generated code files; it does not currently rewrite these SVG snapshots.
 
 - [`examples/sort/output/prompt-tree.svg`](examples/sort/output/prompt-tree.svg)
   Version lineage graph for the sort prompt family.

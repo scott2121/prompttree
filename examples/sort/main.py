@@ -99,10 +99,10 @@ def allocate_version_ids(registry: Registry, family_id: str, count: int) -> List
 
 
 def reset_demo_workspace() -> Path:
-    workspace = Path(tempfile.gettempdir()) / "prompttree-sort-optimization"
-    if workspace.exists():
-        shutil.rmtree(workspace)
-    workspace.mkdir(parents=True, exist_ok=True)
+    workspace = EXAMPLE_DIR
+    for path in [workspace / "prompting", workspace / ".prompttree"]:
+        if path.exists():
+            shutil.rmtree(path)
     return workspace
 
 

@@ -9,8 +9,8 @@
     "prompt": "You are Codex. Write a Python function named `solve(records)` that sorts dictionaries by:\n1. `age` ascending\n2. `score` descending\n3. `name` ascending\n\nOptimization goal:\n- Keep correctness identical to the baseline.\n- Use Python's stable sort intentionally.\n- Prefer `operator.itemgetter` if it improves the hot path.\n- Return a new list.\n- Output code only.",
     "summary": {
       "round": "round-1",
-      "score": 0.322,
-      "avg_time_ms": 3.157,
+      "score": 0.376,
+      "avg_time_ms": 3.509,
       "avg_peak_kb": 270.8,
       "failures": 0,
       "notes": "accepted",
@@ -28,7 +28,7 @@
     "summary": {
       "round": "round-1",
       "score": 1.0,
-      "avg_time_ms": 9.855,
+      "avg_time_ms": 8.841,
       "avg_peak_kb": 831.1,
       "failures": 0,
       "notes": "accepted",
@@ -45,8 +45,8 @@
     "prompt": "You are Codex. Write a Python function named `solve(records)` that sorts dictionaries by:\n1. `age` ascending\n2. `score` descending\n3. `name` ascending\n\nOptimization goal:\n- Minimize allocations while staying correct.\n- Copy the input list once, then sort that list in place.\n- Use one composite sort key.\n- Return the sorted copy.\n- Output code only.",
     "summary": {
       "round": "round-1",
-      "score": 0.933,
-      "avg_time_ms": 9.105,
+      "score": 1.059,
+      "avg_time_ms": 9.75,
       "avg_peak_kb": 794.0,
       "failures": 0,
       "notes": "accepted",

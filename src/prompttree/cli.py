@@ -14,6 +14,42 @@ from .models import ArtifactHandle, PromotionPolicy
 from .registry import Registry
 
 
+def _prompting_root(root: Path) -> Path:
+    return root / "prompting"
+
+
+def _default_ledger_path(root: Path) -> Path:
+    return root / ".prompttree" / "prompttree.db"
+
+
+def _init_command(root: Path) -> str:
+    return f"prompttree init --root {root}"
+
+
+def _require_registry(root: Path) -> Registry:
+    prompting_root = _prompting_root(root)
+    if not prompting_root.exists():
+        raise SystemExit(
+            f"PromptTree is not initialized under {root}. "
+            f"Run `{_init_command(root)}` to create {prompting_root}."
+        )
+    return Registry.load(prompting_root)
+
+
+def _require_ledger(db_path: Path, *, root: Path | None = None) -> Ledger:
+    if not db_path.exists():
+        if root is not None:
+            raise SystemExit(
+                f"PromptTree ledger not found at {db_path}. "
+                f"Run `{_init_command(root)}` to create {_default_ledger_path(root)}."
+            )
+        raise SystemExit(
+            f"PromptTree ledger not found at {db_path}. "
+            "Run `prompttree init --root .` or pass an existing `--db` path."
+        )
+    return Ledger(db_path)
+
+
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(prog="prompttree")
     sub = parser.add_subparsers(dest="command", required=True)
@@ -120,14 +156,14 @@ def main(argv: List[str] | None = None) -> int:
     command = args.command
 
     if command == "init":
-        registry = Registry.load(args.root / "prompting")
+        registry = Registry.load(_prompting_root(args.root))
         registry.init_layout()
-        Ledger(args.root / ".prompttree" / "prompttree.db")
+        Ledger(_default_ledger_path(args.root))
         print(f"Initialized PromptTree in {args.root}")
         return 0
 
     if command == "family" and args.family_command == "list":
-        registry = Registry.load(args.root / "prompting")
+        registry = _require_registry(args.root)
         for family in registry.list_families():
             policy = family.promotion_policy.score_name if family.promotion_policy else "-"
             print(f"{family.id}\t{family.current_version}\t{policy}\t{family.description}")
@@ -135,7 +171,7 @@ def main(argv: List[str] | None = None) -> int:
 
     if command == "version" and args.version_command == "show":
         family_id, version_ref = _split_ref(args.ref)
-        registry = Registry.load(args.root / "prompting")
+        registry = _require_registry(args.root)
         version = registry.resolve_version(family_id, version_ref)
         print(
             json.dumps(
@@ -160,8 +196,8 @@ def main(argv: List[str] | None = None) -> int:
 
     if command == "version" and args.version_command == "diff":
         family_id, version_ref = _split_ref(args.ref)
-        registry = Registry.load(args.root / "prompting")
-        history = History(Ledger(args.db))
+        registry = _require_registry(args.root)
+        history = History(_require_ledger(args.db, root=args.root))
         payload = history.prompt_change_summary(
             registry,
             family_id=family_id,
@@ -175,7 +211,7 @@ def main(argv: List[str] | None = None) -> int:
         return 0
 
     if command == "ref" and args.ref_command == "list":
-        registry = Registry.load(args.root / "prompting")
+        registry = _require_registry(args.root)
         refs = registry.list_refs(args.family)
         try:
             refs["latest"] = registry.resolve_version(args.family, "latest").id
@@ -186,8 +222,8 @@ def main(argv: List[str] | None = None) -> int:
         return 0
 
     if command == "ref" and args.ref_command == "set":
-        registry = Registry.load(args.root / "prompting")
-        ledger = Ledger(args.db)
+        registry = _require_registry(args.root)
+        ledger = _require_ledger(args.db, root=args.root)
         manager = ExperimentManager(registry=registry, ledger=ledger)
         manager.set_ref(
             family_id=args.family,
@@ -199,8 +235,8 @@ def main(argv: List[str] | None = None) -> int:
         return 0
 
     if command == "experiment" and args.experiment_command == "branch-and-start":
-        registry = Registry.load(args.root / "prompting")
-        ledger = Ledger(args.db)
+        registry = _require_registry(args.root)
+        ledger = _require_ledger(args.db, root=args.root)
         manager = ExperimentManager(registry=registry, ledger=ledger)
         if len(args.child_id) != len(args.child_label):
             raise SystemExit("--child-id and --child-label must be provided the same number of times")
@@ -224,7 +260,7 @@ def main(argv: List[str] | None = None) -> int:
         return 0
 
     if command == "experiment" and args.experiment_command == "show":
-        registry = Registry.load(args.root / "prompting")
+        registry = _require_registry(args.root)
         if args.id:
             experiment = registry.get_experiment(args.id)
         elif args.family:
@@ -237,7 +273,7 @@ def main(argv: List[str] | None = None) -> int:
         return 0
 
     if command == "evaluation" and args.evaluation_command == "record":
-        ledger = Ledger(args.db)
+        ledger = _require_ledger(args.db)
         metrics = _load_optional_data(args.metrics_file, default={})
         subscores = _load_optional_data(args.subscores_file, default={})
         attachments = [
@@ -262,8 +298,8 @@ def main(argv: List[str] | None = None) -> int:
         return 0
 
     if command == "scoreboard":
-        registry = Registry.load(args.root / "prompting")
-        ledger = Ledger(args.db)
+        registry = _require_registry(args.root)
+        ledger = _require_ledger(args.db, root=args.root)
         summaries = ledger.summarize_versions(
             family_id=args.family,
             score_name=args.score_name,
@@ -290,8 +326,8 @@ def main(argv: List[str] | None = None) -> int:
         return 0
 
     if command == "promote" and args.promote_command == "auto":
-        registry = Registry.load(args.root / "prompting")
-        ledger = Ledger(args.db)
+        registry = _require_registry(args.root)
+        ledger = _require_ledger(args.db, root=args.root)
         manager = ExperimentManager(registry=registry, ledger=ledger)
         winner = manager.select_and_promote(
             family_id=args.family,
@@ -318,7 +354,7 @@ def main(argv: List[str] | None = None) -> int:
         return 0
 
     if command == "repair-context":
-        history = History(Ledger(args.db))
+        history = History(_require_ledger(args.db))
         context = history.repair_context(
             artifact_kind=args.kind,
             dataset=args.dataset,

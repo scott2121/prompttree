@@ -3,3 +3,7 @@ __pycache__/
 *.pyc
 .prompttree/
 .tmp-init/
+examples/**/prompting/
+examples/qualitative_image_review/generated/
+examples/qualitative_image_review/reviews/
+examples/qualitative_image_review/lineage/

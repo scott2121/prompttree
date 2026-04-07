@@ -1,6 +1,9 @@
+from operator import itemgetter
+
+
 def solve(records):
-    records = list(records)
-    records.sort(key=lambda r: r['name'])
-    records.sort(key=lambda r: r['score'], reverse=True)
-    records.sort(key=lambda r: r['age'])
-    return records
+    result = list(records)
+    result.sort(key=itemgetter('name'))
+    result.sort(key=itemgetter('score'), reverse=True)
+    result.sort(key=itemgetter('age'))
+    return result

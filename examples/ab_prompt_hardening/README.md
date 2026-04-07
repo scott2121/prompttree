@@ -14,10 +14,12 @@ Run it from the repository root:
 python examples/ab_prompt_hardening/main.py
 ```
 
+This example uses `examples/ab_prompt_hardening/` itself as the PromptTree workspace. Each run recreates `prompting/` and `.prompttree/` inside that example directory so the layout matches how a library user would structure a local project.
+
 What the example includes:
 
 - `main.py`: end-to-end demo runner
-- a temporary PromptTree workspace under your system temp directory
+- a local PromptTree workspace under `examples/ab_prompt_hardening/`
 - a deterministic fake model, so the example runs without external APIs
 - pass-rate and score summaries per arm
 - a final promotion step that updates `family.yaml`

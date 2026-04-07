@@ -1,2 +1,4 @@
 def solve(records):
-    return sorted(records, key=lambda r: (r['age'], -r['score'], r['name']))
+    decorated = [((record["age"], -record["score"], record["name"]), record) for record in records]
+    decorated.sort(key=lambda item: item[0])
+    return [record for _, record in decorated]

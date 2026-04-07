@@ -24,6 +24,14 @@ English README: [README.md](/Users/hikaru/Desktop/prompttree/README.md)
 pip install -e .
 ```
 
+インストール後は、利用するプロジェクトで初期化します。
+
+```bash
+prompttree init --root .
+```
+
+これにより、現在のプロジェクト配下に `prompting/` と `.prompttree/prompttree.db` が作られます。パッケージをインストールしただけでは、これらのディレクトリや DB は作成されません。
+
 ## レイアウト
 
 ```text
@@ -183,9 +191,11 @@ python examples/ab_prompt_hardening/main.py
 python examples/qualitative_image_review/main.py
 ```
 
-## 可視化された実行例
+各 example は自分自身のディレクトリをローカル PromptTree workspace として使います。実行時には、その example ディレクトリ配下の `prompting/` と `.prompttree/` が再作成されます。
 
-sort example は、SQLite ledger を直接読まなくても進化の流れを確認できる可視化アーティファクトを出力します。
+## サンプルの可視化出力
+
+sort example には、SQLite ledger を直接読まなくても進化の流れを確認できる可視化アーティファクトのサンプルを同梱しています。現在の `examples/sort/main.py` が再生成するのは `run.txt`、lineage JSON、生成コードであり、これらの SVG スナップショット自体は現状のスクリプトでは書き直しません。
 
 - [`examples/sort/output/prompt-tree.svg`](examples/sort/output/prompt-tree.svg)
   sort prompt family のバージョン系譜を表すグラフです。

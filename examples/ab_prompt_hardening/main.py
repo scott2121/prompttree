@@ -3,12 +3,12 @@ from __future__ import annotations
 import json
 import shutil
 import sys
-import tempfile
 from pathlib import Path
 from statistics import mean
 from textwrap import dedent
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
+EXAMPLE_DIR = Path(__file__).resolve().parent
 sys.path.insert(0, str(REPO_ROOT / "src"))
 
 from prompttree import ArtifactHandle, ExperimentManager, Ledger, PromotionPolicy, Registry
@@ -138,11 +138,11 @@ def build_tickets() -> list[dict[str, object]]:
     return tickets
 
 
-def reset_demo_workspace() -> Path:
-    workspace = Path(tempfile.gettempdir()) / "prompttree-ab-prompt-hardening"
-    if workspace.exists():
-        shutil.rmtree(workspace)
-    workspace.mkdir(parents=True, exist_ok=True)
+def reset_example_workspace() -> Path:
+    workspace = EXAMPLE_DIR
+    for path in [workspace / "prompting", workspace / ".prompttree"]:
+        if path.exists():
+            shutil.rmtree(path)
     return workspace
 
 
@@ -351,7 +351,7 @@ def print_summary(workspace: Path, experiment_id: str, registry: Registry, ledge
 
 
 def main() -> int:
-    workspace = reset_demo_workspace()
+    workspace = reset_example_workspace()
     registry = seed_registry(workspace)
     ledger = Ledger(workspace / ".prompttree" / "prompttree.db")
     manager, experiment = prepare_experiment(registry, ledger)

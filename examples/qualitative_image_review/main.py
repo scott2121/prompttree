@@ -4,7 +4,6 @@ import json
 import shutil
 import struct
 import sys
-import tempfile
 import zlib
 from pathlib import Path
 from textwrap import dedent
@@ -13,6 +12,7 @@ from typing import Any, Dict, List
 import yaml
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
+EXAMPLE_DIR = Path(__file__).resolve().parent
 sys.path.insert(0, str(REPO_ROOT / "src"))
 
 from prompttree import ArtifactHandle, ExperimentManager, Ledger, PromotionPolicy, Registry, artifact_from_path, collect_prompt_hops
@@ -44,10 +44,17 @@ PROMPT_V3 = dedent(
 ).strip()
 
 
-def reset_demo_workspace() -> Path:
-    workspace = Path(tempfile.gettempdir()) / "prompttree-qualitative-image-review"
-    if workspace.exists():
-        shutil.rmtree(workspace)
+def reset_example_workspace() -> Path:
+    workspace = EXAMPLE_DIR
+    for path in [
+        workspace / "prompting",
+        workspace / ".prompttree",
+        workspace / "generated",
+        workspace / "reviews",
+        workspace / "lineage",
+    ]:
+        if path.exists():
+            shutil.rmtree(path)
     (workspace / "generated").mkdir(parents=True, exist_ok=True)
     (workspace / "reviews").mkdir(parents=True, exist_ok=True)
     (workspace / "lineage").mkdir(parents=True, exist_ok=True)
@@ -302,7 +309,7 @@ def print_scoreboard(registry: Registry, ledger: Ledger) -> None:
 
 
 def main() -> int:
-    workspace = reset_demo_workspace()
+    workspace = reset_example_workspace()
     registry = seed_registry(workspace)
     ledger = Ledger(workspace / ".prompttree" / "prompttree.db")
     manager = ExperimentManager(registry=registry, ledger=ledger)
