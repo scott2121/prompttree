@@ -165,11 +165,17 @@ print(winner.version_id if winner else "no winner")
 ## Examples
 
 - `python examples/sort/main.py`
+  コード生成を対象にした end-to-end の prompt evolution の例です。
   コード生成向けの prompt discovery を実行し、`prompt_generation`、`code_generation`、`benchmark` の実行を記録し、最小コストのプロンプトを自動プロモートします。
+  バージョン分岐、生成アーティファクト、ベンチマーク評価、可視化出力までをまとめて見たい場合の基準となる example です。
 - `python examples/ab_prompt_hardening/main.py`
+  テキスト生成ワークフロー向けの決定論的な A/B テストの例です。
   決定論的な A/B の support-reply 実験を実行し、外部 rubric score を ledger に取り込み、自動プロモーションを行います。
+  既に evaluator や人手レビュー基準があり、PromptTree に割り当て、run 記録、勝者プロモーションを任せたいケースに向いています。
 - `python examples/qualitative_image_review/main.py`
+  画像プロンプト改善のための human-in-the-loop review の例です。
   ローカル PNG アーティファクト、構造化された人手レビュー、レビュー内容からの prompt generation、自動プロモーションを含む定性的レビューのループを示します。
+  数値ベンチマークよりもレビューコメントが主な評価信号になるマルチモーダル運用の雛形として使えます。
 
 ```bash
 python examples/sort/main.py

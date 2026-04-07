@@ -165,11 +165,17 @@ print(winner.version_id if winner else "no winner")
 ## Examples
 
 - `python examples/sort/main.py`
+  End-to-end prompt evolution for code generation.
   Runs prompt discovery for code generation, records `prompt_generation`, `code_generation`, and `benchmark` runs, and auto-promotes the lowest-cost prompt.
+  This is the best example if you want to see version branching, generated artifacts, benchmark-driven evaluation, and visualization output working together.
 - `python examples/ab_prompt_hardening/main.py`
+  Deterministic A/B testing for a text-generation workflow.
   Runs a deterministic A/B support-reply experiment where external rubric scores are ingested into the ledger and promotion happens automatically.
+  This is the clearest example for teams that already have an evaluator or human-review rubric and want PromptTree to handle assignment, run logging, and winner promotion.
 - `python examples/qualitative_image_review/main.py`
+  Human-in-the-loop review for image-style prompt iteration.
   Demonstrates a qualitative review loop with simulated local PNG artifacts, structured human review files, prompt generation from review notes, and auto-promotion.
+  Use this example as the reference shape for multimodal workflows where the main signal comes from reviewer feedback rather than a numeric benchmark.
 
 ```bash
 python examples/sort/main.py
