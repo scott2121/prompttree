@@ -176,3 +176,30 @@ python examples/sort/main.py
 python examples/ab_prompt_hardening/main.py
 python examples/qualitative_image_review/main.py
 ```
+
+## 可視化された実行例
+
+sort example は、SQLite ledger を直接読まなくても進化の流れを確認できる可視化アーティファクトを出力します。
+
+- [`examples/sort/output/prompt-tree.svg`](examples/sort/output/prompt-tree.svg)
+  sort prompt family のバージョン系譜を表すグラフです。
+- [`examples/sort/output/score-summary.svg`](examples/sort/output/score-summary.svg)
+  バージョンごとのスコアとベンチマーク要約をまとめた図です。
+- [`examples/sort/output/prompt-improvement.svg`](examples/sort/output/prompt-improvement.svg)
+  後続候補でプロンプトがどう変わったかを比較する図です。
+- [`examples/sort/output/run.txt`](examples/sort/output/run.txt)
+  昇格された勝者とベンチマーク結果を含むテキスト要約です。
+- [`examples/sort/output/lineage-context.json`](examples/sort/output/lineage-context.json)
+  将来の prompt generation に再投入できる machine-readable な lineage context です。
+
+プロンプトツリーのプレビュー:
+
+![Prompt tree example](examples/sort/output/prompt-tree.svg)
+
+スコア要約のプレビュー:
+
+![Score summary example](examples/sort/output/score-summary.svg)
+
+改善差分のプレビュー:
+
+![Prompt improvement example](examples/sort/output/prompt-improvement.svg)

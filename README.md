@@ -176,3 +176,30 @@ python examples/sort/main.py
 python examples/ab_prompt_hardening/main.py
 python examples/qualitative_image_review/main.py
 ```
+
+## Visualized Example Output
+
+The sort example writes visual artifacts that make prompt evolution easier to inspect without opening the SQLite ledger directly.
+
+- [`examples/sort/output/prompt-tree.svg`](examples/sort/output/prompt-tree.svg)
+  Version lineage graph for the sort prompt family.
+- [`examples/sort/output/score-summary.svg`](examples/sort/output/score-summary.svg)
+  Compact score and benchmark summary by version.
+- [`examples/sort/output/prompt-improvement.svg`](examples/sort/output/prompt-improvement.svg)
+  A prompt-to-prompt comparison view showing how later candidates changed.
+- [`examples/sort/output/run.txt`](examples/sort/output/run.txt)
+  Plain-text run summary with promoted winner and benchmark results.
+- [`examples/sort/output/lineage-context.json`](examples/sort/output/lineage-context.json)
+  Machine-readable lineage context that can be fed back into future prompt generation steps.
+
+Prompt tree preview:
+
+![Prompt tree example](examples/sort/output/prompt-tree.svg)
+
+Score summary preview:
+
+![Score summary example](examples/sort/output/score-summary.svg)
+
+Prompt improvement preview:
+
+![Prompt improvement example](examples/sort/output/prompt-improvement.svg)
